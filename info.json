@@ -1,0 +1,14 @@
+{
+    "author" : ["sep#0001"],
+    "type": "SHARED_LIBRARY",
+    "install_msg" : "Thanks for installing Sep's Streamabs API Library.",
+    "name" : "streamlabsapi",
+    "short" : "Library for interacting with the Streamlabs web API.",
+    "description" : "Library for interacting with the Streamlabs web API.",
+    "required_cogs" : {
+      "streamlabs": "https://github.com/Seputaes/sep-cogs.git"
+    },
+    "tags" : ["library", "utility", "api", "streaming", "streamlabs"],
+    "requirements" : [],
+    "hidden" : false
+}
