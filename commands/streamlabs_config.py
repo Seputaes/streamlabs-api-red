@@ -161,9 +161,9 @@ class StreamlabsConfig(object):
             if not result:
                 return
 
-        if not isinstance(guild_auth_map[ctx.guild.id], dict):
-            LOGGER.error(f'Guild Auth Map value for Guild ID key "{ctx.guild.id}" is not a dictionary')
-            return
+            if not isinstance(guild_auth_map[ctx.guild.id], dict):
+                LOGGER.error(f'Guild Auth Map value for Guild ID key "{ctx.guild.id}" is not a dictionary')
+                return
 
         # CONFIG INTRO MESSAGE
         confirmed = await StreamlabsConfig.__config_welcome(ctx=ctx, timeout=timeout)
