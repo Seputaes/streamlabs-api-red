@@ -6,7 +6,7 @@ notifications:
 
 install:
   - git clone https://github.com/$TRAVIS_REPO_SLUG.git streamlabsapi
-  - cd seplib
+  - cd streamlabsapi
   - git checkout -qf $TRAVIS_COMMIT
   - pip install tox tox-venv tox-travis
 
