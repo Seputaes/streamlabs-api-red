@@ -19,5 +19,5 @@ matrix:
     - { python: "3.7", env: TOXENV=py }
 
     - { python: "3.6", env: TOXENV=style }
-    - { python: "3.6", env: TOXENV=checkstyle }
+    - { python: "3.6", env: TOXENV=coverage }
     - { python: "3.6", env: TOXENV=relative-imports }
