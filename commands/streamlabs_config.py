@@ -172,7 +172,9 @@ class StreamlabsConfig(object):
         return auth_data
 
     @staticmethod
-    async def continue_config(ctx: Context, auth_data: Dict[str, str], timeout: int = 60) -> Optional[Dict[str, Union[str, int]]]:
+    async def continue_config(
+        ctx: Context, auth_data: Dict[str, str], timeout: int = 60
+    ) -> Optional[Dict[str, Union[str, int]]]:
         """
         Continues the Streamlabs configuration. This is the second of 2 commands, the first one is start_config.
 
