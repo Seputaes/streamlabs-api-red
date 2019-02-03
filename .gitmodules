@@ -1,0 +1,3 @@
+[submodule "seplib"]
+	path = seplib
+	url = https://github.com/Seputaes/seplib-red.git

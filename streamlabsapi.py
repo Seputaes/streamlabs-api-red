@@ -7,4 +7,5 @@ class StreamlabsAPI(commands.Cog):
         super(StreamlabsAPI, self).__init__()
         self.bot = bot
 
+
 # this is a shared library cog and has no functionality
