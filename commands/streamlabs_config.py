@@ -1,5 +1,5 @@
 import logging
-from typing import Dict, Optional
+from typing import Dict, Optional, Union
 
 import discord
 
@@ -113,59 +113,31 @@ class StreamlabsConfig(object):
         return await embed.send(ctx)
 
     @staticmethod
-    async def start_config(
-        ctx: Context, guild_auth_map: Dict[int, Dict[str, str]], timeout: int = 60
-    ) -> Optional[Dict[int, Dict[str, str]]]:
+    async def start_config(ctx: Context, timeout: int = 60) -> Optional[Dict[str, str]]:
         """
         Begin setting up Streamlabs configuration. This will proceed through a series of steps to instruct the user
         how to configure the StreamLabs API.
 
         It is part of a two-command process. The second of which is "continue_config".
 
-        The configuration is on a per-Discord Server/Guild basis. How you store the auth configuration is up to you,
-        but this method requires you pass in a dictionary with Guild Id (int) as the the key, and the value being
-        ad dictionary with the various auth values:
+        How you store the auth configuration returned from this method is up to you (per user, per server, global, etc).
 
+        The auth configuration returned from this method is partical. You will need to update the dict returned
+        from this method with the one returned from "continue_config".
+
+        Data returned from this method:
         {
             "client_id": str,
             "client_secret": str,
             "redirect_uri": str,
-            "access_token": str,
-            "refresh_token": str,
-            "expires_in": str,
-            "token_type": str
         }
-        
-        This configuration likely will not exist, and so it will be created and returned by this command.
-        It is passed in in order to to updated existing configuration, as well as check if config has already been
-        done to warn about overwriting.
 
         :param ctx: Context in which the command was issued.
-        :param guild_auth_map: Map of Guild IDs (int) to auth configuration (if it exists).
         :param timeout: Amount of time between each config step that the user will have to provide answers.
-        :return: Map of Guild IDs (int) to auth configuration. Or none if user did not respond in time.
+        :return: Auth configuration consisting of client_id, client_secret, and redirect_uri.
         """
 
-        if ctx.guild.id in guild_auth_map:
-            message = (
-                "Configuration for this guild is already finished or in progress. "
-                "Continuing will overwrite that configuration.\n\n"
-                "Are you sure you wish to continue?"
-            )
-            reply = StreamlabsReply(
-                message=message,
-                title=f"**WARNING** Configuration Complete or in Progress for " f"Guild: {ctx.guild.name}",
-                color=HexColor.warning(),
-            )
-            result = await InteractiveActions.yes_or_no_action(ctx=ctx, embed=reply.build())
-            if not result:
-                return
-
-            if not isinstance(guild_auth_map[ctx.guild.id], dict):
-                LOGGER.error(f'Guild Auth Map value for Guild ID key "{ctx.guild.id}" is not a dictionary')
-                return
-        else:
-            guild_auth_map[ctx.guild.id] = {}
+        auth_data = {}
 
         # CONFIG INTRO MESSAGE
         confirmed = await StreamlabsConfig.__config_welcome(ctx=ctx, timeout=timeout)
@@ -178,42 +150,60 @@ class StreamlabsConfig(object):
         if not client_id:
             await ContextWrapper(ctx).cross()
             return
-        guild_auth_map[ctx.guild.id]["client_id"] = client_id
+        auth_data["client_id"] = client_id
 
         # CLIENT SECRET
         client_secret = await StreamlabsConfig.__config_client_secret(ctx=ctx, timeout=timeout)
         if not client_secret:
             await ContextWrapper(ctx).cross()
             return
-        guild_auth_map[ctx.guild.id]["client_secret"] = client_secret
+        auth_data["client_secret"] = client_secret
 
         # REDIRECT URI
         redirect_uri = await StreamlabsConfig.__config_redirect_uri(ctx=ctx, timeout=timeout)
         if not redirect_uri:
             await ContextWrapper(ctx).cross()
             return
-        guild_auth_map[ctx.guild.id]["redirect_uri"] = redirect_uri
+        auth_data["redirect_uri"] = redirect_uri
 
         # ASK USER TO APPROVE APP
         auth_url = AuthorizeAPI.build_auth_url(client_id=client_id, redirect_uri=redirect_uri)
         await StreamlabsConfig.__config_give_auth_url(ctx=ctx, auth_url=auth_url)
-        return guild_auth_map
+        return auth_data
 
     @staticmethod
-    async def continue_config(
-        ctx: Context, guild_auth_map: Dict[int, Dict[str, str]], timeout: int = 60
-    ) -> Optional[Dict[int, Dict[str, str]]]:
+    async def continue_config(ctx: Context, auth_data: Dict[str, str], timeout: int = 60) -> Optional[Dict[str, Union[str, int]]]:
         """
-        Continues the Streamlabs configuration. This is the second of 2 commands, the first one is start_config
+        Continues the Streamlabs configuration. This is the second of 2 commands, the first one is start_config.
+
+        This will update the auth_data data which you received from the start_config method.
+
+        Data added by this method:
+        {
+            "access_token": str,
+            "expires_in": int,
+            "refresh_token": str,
+        }
+
+        Final Result:
+        {
+            "client_id": str,
+            "client_secret": str,
+            "redirect_uri": str,
+            "access_token": str,
+            "expires_in": int,
+            "refresh_token": str,
+        }
+
         :param ctx: Context the continue command was called in.
-        :param guild_auth_map: guild_auth_map return value from the start_config command.
+        :param auth_data: auth_data received from the start_config method,
+                          consisting of client_id, client_secret, and redirect_uri
         :param timeout: Amount of time the user will have to enter the auth code.
-        :return: Updates/Returns the guild_auth_map with the fully created authorization values from the
-                 Streamlabs Token API.
+        :return: Updates/Returns the auth_data with the fully created authorization values from the
+                 Streamlabs Token API. You can then store this accordingly.
         """
 
-        guild_auth = guild_auth_map.get(ctx.guild.id)
-        if not all(k in guild_auth for k in ["client_id", "client_secret", "redirect_uri"]):
+        if not all(k in auth_data for k in ["client_id", "client_secret", "redirect_uri"]):
             message = (
                 f"Configuration for this guild is not started or complete. P"
                 f"lease run `{ctx.prefix}streamlabs config` first."
@@ -226,13 +216,13 @@ class StreamlabsConfig(object):
             return
 
         result = await TokenAPI.get_access_token(
-            client_id=guild_auth.get("client_id"),
-            client_secret=guild_auth.get("client_secret"),
-            redirect_uri=guild_auth.get("redirect_uri"),
+            client_id=auth_data.get("client_id"),
+            client_secret=auth_data.get("client_secret"),
+            redirect_uri=auth_data.get("redirect_uri"),
             auth_code=auth_code,
         )
         if isinstance(result, Result):
             return await ErrorReply(message=result.error).send(ctx)
         await SuccessReply(message="Success!").send(ctx)
-        guild_auth_map[ctx.guild.id].update(result)
-        return guild_auth_map
+        auth_data.update(result)
+        return auth_data
