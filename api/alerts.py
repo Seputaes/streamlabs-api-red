@@ -51,7 +51,9 @@ class AlertsAPI(BaseAPI):
         data.update((k, v) for k, v in args.items() if v is not None)
 
         json_resp = await self._post(data=data)
-        return Result.get_result(check=lambda: "error" not in json_resp, error=json_resp.get("error"))
+        if "error" not in json_resp:
+            return Result(success=True, value=json_resp, error=None)
+        return Result(success=False, value=None, error=json_resp.get("error"))
 
     async def skip_alert(self) -> Result:
         """
@@ -59,7 +61,9 @@ class AlertsAPI(BaseAPI):
         :return: Result, if with error if result was not successful
         """
         json_resp = await self._post(data=None, append_path="/skip")
-        return Result.get_result(check=lambda: "error" not in json_resp, error=json_resp.get("error"))
+        if "error" not in json_resp:
+            return Result(success=True, value=json_resp, error=None)
+        return Result(success=False, value=None, error=json_resp.get("error"))
 
     async def mute_volume(self) -> Result:
         """
@@ -67,7 +71,9 @@ class AlertsAPI(BaseAPI):
         :return: Result, if with error if result was not successful
         """
         json_resp = await self._post(data=None, append_path="/mute_volume")
-        return Result.get_result(check=lambda: "error" not in json_resp, error=json_resp.get("error"))
+        if "error" not in json_resp:
+            return Result(success=True, value=json_resp, error=None)
+        return Result(success=False, value=None, error=json_resp.get("error"))
 
     async def unmute_volume(self) -> Result:
         """
@@ -75,7 +81,9 @@ class AlertsAPI(BaseAPI):
         :return: Result, if with error if result was not successful
         """
         json_resp = await self._post(data=None, append_path="/unmute_volume")
-        return Result.get_result(check=lambda: "error" not in json_resp, error=json_resp.get("error"))
+        if "error" not in json_resp:
+            return Result(success=True, value=json_resp, error=None)
+        return Result(success=False, value=None, error=json_resp.get("error"))
 
     async def pause_queue(self) -> Result:
         """
@@ -83,7 +91,9 @@ class AlertsAPI(BaseAPI):
         :return: Result, if with error if result was not successful
         """
         json_resp = await self._post(data=None, append_path="/pause_queue")
-        return Result.get_result(check=lambda: "error" not in json_resp, error=json_resp.get("error"))
+        if "error" not in json_resp:
+            return Result(success=True, value=json_resp, error=None)
+        return Result(success=False, value=None, error=json_resp.get("error"))
 
     async def unpause_queue(self) -> Result:
         """
@@ -91,7 +101,9 @@ class AlertsAPI(BaseAPI):
         :return: Result, if with error if result was not successful
         """
         json_resp = await self._post(data=None, append_path="/unpause_queue")
-        return Result.get_result(check=lambda: "error" not in json_resp, error=json_resp.get("error"))
+        if "error" not in json_resp:
+            return Result(success=True, value=json_resp, error=None)
+        return Result(success=False, value=None, error=json_resp.get("error"))
 
     async def send_test_alert(self, type_: str, platform: str = None) -> Result:
         """
@@ -105,7 +117,9 @@ class AlertsAPI(BaseAPI):
             data["platform"] = platform
 
         json_resp = await self._post(data=data, append_path="/send_test_alert")
-        return Result.get_result(check=lambda: "error" not in json_resp, error=json_resp.get("error"))
+        if "error" not in json_resp:
+            return Result(success=True, value=json_resp, error=None)
+        return Result(success=False, value=None, error=json_resp.get("error"))
 
     async def show_video(self) -> Result:
         """
@@ -113,7 +127,9 @@ class AlertsAPI(BaseAPI):
         :return: Result, if with error if result was not successful
         """
         json_resp = await self._post(data=None, append_path="/show_video")
-        return Result.get_result(check=lambda: "error" not in json_resp, error=json_resp.get("error"))
+        if "error" not in json_resp:
+            return Result(success=True, value=json_resp, error=None)
+        return Result(success=False, value=None, error=json_resp.get("error"))
 
     async def hide_video(self) -> Result:
         """
@@ -121,4 +137,6 @@ class AlertsAPI(BaseAPI):
         :return: Result, if with error if result was not successful
         """
         json_resp = await self._post(data=None, append_path="/hide_video")
-        return Result.get_result(check=lambda: "error" not in json_resp, error=json_resp.get("error"))
+        if "error" not in json_resp:
+            return Result(success=True, value=json_resp, error=None)
+        return Result(success=False, value=None, error=json_resp.get("error"))

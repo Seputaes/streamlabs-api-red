@@ -81,7 +81,6 @@ class DonationsAPI(BaseAPI):
         args = {"created_at": created_at, "message": message, "skip_alert": "yes" if skip_alert is True else None}
         data.update((k, v) for k, v in args.items() if v is not None)
         json_resp = await self._post(data=data)
-        result = Result.get_result(check=lambda: "donation_id" in json_resp, error=json_resp.get("error"))
-        if not result.success:
-            return result
-        return json_resp.get("donation_id")
+        if "donation_id" in json_resp:
+            return json_resp.get("donation_id")
+        return Result(success=False, value=None, error=json_resp.get("error"))

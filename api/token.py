@@ -43,7 +43,7 @@ class TokenAPI(BaseAPI):
             async with session.post(url=TokenAPI.build_token_url(), data=auth_data) as resp:
                 if resp.status != 200:
                     reply = await resp.json()
-                    return Result(success=False, error=f"Streamlabs Token API request failed. Error: {reply}")
+                    return Result(success=False, error=f"Streamlabs Token API request failed. Error: {reply}", value=False)
                 return await resp.json()
 
     @staticmethod
@@ -74,5 +74,5 @@ class TokenAPI(BaseAPI):
             async with session.post(url=TokenAPI.build_token_url(), data=auth_data) as resp:
                 if resp.status != 200:
                     reply = await resp.json()
-                    return Result(success=False, error=f"Streamlabs Token API request failed. Error: {reply}")
+                    return Result(success=False, error=f"Streamlabs Token API request failed. Error: {reply}", value=False)
                 return await resp.json()
