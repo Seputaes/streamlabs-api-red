@@ -1,0 +1,26 @@
+from enum import Enum
+
+
+class CurrencyCode(Enum):
+    AUD = "AUD"
+    BRL = "BRL"
+    CAD = "CAD"
+    CZK = "CZK"
+    DKK = "DKK"
+    EUR = "EUR"
+    HKD = "HKD"
+    ILS = "ILS"
+    MYR = "MYR"
+    MXN = "MXN"
+    NOK = "NOK"
+    NZD = "NZD"
+    PHP = "PHP"
+    PLN = "PLN"
+    GBP = "GBP"
+    RUB = "RUB"
+    SGD = "SGD"
+    SEK = "SEK"
+    CHF = "CHF"
+    THB = "THB"
+    TRY = "TRY"
+    USD = "USD"
