@@ -9,7 +9,7 @@ from ..api import AuthorizeAPI
 from ..replies import StreamlabsReply
 from ..seplib.replies import ErrorReply, InteractiveActions, SuccessReply
 from ..seplib.utils import ContextWrapper, HexColor, Result
-from ..utils import GetReplyPredicate
+from ..seplib.utils import GetReplyPredicate
 
 LOGGER = logging.getLogger("red.streamlabsapi.StreamlabsConfig")
 LOGGER.setLevel(logging.INFO)
