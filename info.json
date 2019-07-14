@@ -10,5 +10,6 @@
     },
     "tags" : ["library", "utility", "api", "streaming", "streamlabs"],
     "requirements" : [],
-    "hidden" : false
+    "hidden" : false,
+    "min_bot_version": "3.1.1"
 }
